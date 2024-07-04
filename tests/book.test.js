@@ -174,6 +174,21 @@ describe('/api/book', async () => {
         error: 'Book not in database'
       })
     })
+
+    test('POST', async () => {
+      const response = await api
+        .post('/api/book/isbn/9780141186672')
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      assert.deepStrictEqual(response.body, {
+        isbn: 9780141186672,
+        title: "The Man in the High Castle",
+        author: "Philip K. Dick"
+      })
+
+      await Book.deleteOne({ _id: 9780141186672 })
+    })
   })
 })
 
