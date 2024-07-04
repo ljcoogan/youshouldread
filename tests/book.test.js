@@ -39,7 +39,7 @@ describe('/api/book', async () => {
     await Book.insertMany(newBooks)
   })
 
-  test('get /', async () => {
+  test('GET /', async () => {
     const response = await api
       .get('/api/book')
       .expect(200)
@@ -48,7 +48,7 @@ describe('/api/book', async () => {
     assert.deepStrictEqual(response.body, testBooks)
   })
 
-  test('post /', async () => {
+  test('POST /', async () => {
     const request = {
       isbn: 9780141186672,
       title: "The Man in the High Castle",
@@ -64,6 +64,20 @@ describe('/api/book', async () => {
     assert.deepStrictEqual(response.body, request)
 
     await Book.deleteOne({ _id: request.isbn })
+  })
+
+  test('POST / fails when ISBN isn\'t unique', async () => {
+    const request = testBooks[0]
+
+    const response = await api
+      .post('/api/book')
+      .send(request)
+      .expect(409)
+      .expect('Content-Type', /application\/json/)
+
+    assert.deepStrictEqual(response.body, {
+      error: 'Content already exists in database'
+    })
   })
 })
 

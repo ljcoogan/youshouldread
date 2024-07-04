@@ -4,6 +4,8 @@ import mongoose from 'mongoose'
 
 import bookRouter from './routes/book.route.js'
 
+import error_handler from './utils/error_handler.js'
+
 let db
 if (process.env.NODE_ENV === 'production') {
   db = process.env.PROD_DB
@@ -29,5 +31,7 @@ if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'))
 app.use(express.json())
 
 app.use('/api/book', bookRouter)
+
+app.use(error_handler)
 
 export default app
