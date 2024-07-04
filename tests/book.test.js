@@ -39,117 +39,141 @@ describe('/api/book', async () => {
     await Book.insertMany(newBooks)
   })
 
-  test('GET /', async () => {
-    const response = await api
-      .get('/api/book')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-
-    assert.deepStrictEqual(response.body, testBooks)
-  })
-
-  test('POST /', async () => {
-    const request = {
-      isbn: 9780141186672,
-      title: "The Man in the High Castle",
-      author: "Philip K. Dick"
-    }
-
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    assert.deepStrictEqual(response.body, request)
-
-    await Book.deleteOne({ _id: request.isbn })
-  })
-
-  test('POST / fails when ISBN isn\'t unique', async () => {
-    const request = testBooks[0]
-
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(409)
-      .expect('Content-Type', /application\/json/)
-
-    assert.deepStrictEqual(response.body, {
-      error: 'Content already exists in database'
+  describe ('/', async () => {
+    test('GET', async () => {
+      const response = await api
+        .get('/api/book')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.deepStrictEqual(response.body, testBooks)
+    })
+  
+    test('POST', async () => {
+      const request = {
+        isbn: 9780141186672,
+        title: "The Man in the High Castle",
+        author: "Philip K. Dick"
+      }
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.deepStrictEqual(response.body, request)
+  
+      await Book.deleteOne({ _id: request.isbn })
+    })
+  
+    test('POST fails when ISBN isn\'t unique', async () => {
+      const request = testBooks[0]
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(409)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.deepStrictEqual(response.body, {
+        error: 'Content already exists in database'
+      })
+    })
+  
+    test('POST fails when ISBN isn\'t provided', async () => {
+      const request = {
+        title: "The Man in the High Castle",
+        author: "Philip K. Dick"
+      }
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+  
+      assert.deepStrictEqual(response.body, {
+        error: 'ISBN not provided'
+      })
+    })
+  
+    test('POST fails when title isn\'t provided', async () => {
+      const request = {
+        isbn: 9780141186672,
+        author: "Philip K. Dick"
+      }
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+      
+      assert.deepStrictEqual(response.body, {
+        error: 'Book title not provided'
+      })
+    })
+  
+    test('POST fails when author isn\'t provided', async () => {
+      const request = {
+        isbn: 9780141186672,
+        title: "The Man in the High Castle"
+      }
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+      
+      assert.deepStrictEqual(response.body, {
+        error: 'Book author not provided'
+      })
+    })
+  
+    test('POST trims extraneous whitespace', async () => {
+      const request = {
+        isbn: 9780141186672,
+        title: " The Man in the  High Castle ",
+        author: "Philip K.   Dick      "
+      }
+  
+      const response = await api
+        .post('/api/book')
+        .send(request)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+  
+      request.title = request.title.trim()
+      request.author = request.author.trim()
+      
+      assert.deepStrictEqual(response.body, request)
+  
+      await Book.deleteOne({ _id: request.isbn })
     })
   })
 
-  test('POST / fails when ISBN isn\'t provided', async () => {
-    const request = {
-      title: "The Man in the High Castle",
-      author: "Philip K. Dick"
-    }
-
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-
-    assert.deepStrictEqual(response.body, {
-      error: 'ISBN not provided'
+  describe('/isbn/', async () => {
+    test('GET', async () => {
+      const response = await api
+        .get('/api/book/isbn/9780140449266')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      
+      assert.deepStrictEqual(response.body, testBooks[0])
     })
-  })
 
-  test('POST / fails when title isn\'t provided', async () => {
-    const request = {
-      isbn: 9780141186672,
-      author: "Philip K. Dick"
-    }
+    test('GET fails when ISBN provided is not in database', async () => {
+      const response = await api
+        .get('/api/book/isbn/9780261103283')
+        .expect(404)
+        .expect('Content-Type', /application\/json/)
 
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-    
-    assert.deepStrictEqual(response.body, {
-      error: 'Book title not provided'
+      assert.deepStrictEqual(response.body, {
+        error: 'Book not in database'
+      })
     })
-  })
-
-  test('POST / fails when author isn\'t provided', async () => {
-    const request = {
-      isbn: 9780141186672,
-      title: "The Man in the High Castle"
-    }
-
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-    
-    assert.deepStrictEqual(response.body, {
-      error: 'Book author not provided'
-    })
-  })
-
-  test('POST / trims extraneous whitespace', async () => {
-    const request = {
-      isbn: 9780141186672,
-      title: " The Man in the  High Castle ",
-      author: "Philip K.   Dick      "
-    }
-
-    const response = await api
-      .post('/api/book')
-      .send(request)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    request.title = request.title.trim()
-    request.author = request.author.trim()
-    
-    assert.deepStrictEqual(response.body, request)
-
-    await Book.deleteOne({ _id: request.isbn })
   })
 })
 
