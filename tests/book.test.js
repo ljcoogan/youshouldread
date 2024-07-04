@@ -48,6 +48,23 @@ describe('/api/book', async () => {
     assert.deepStrictEqual(response.body, testBooks)
   })
 
+  test('post /', async () => {
+    const request = {
+      isbn: 9780141186672,
+      title: "The Man in the High Castle",
+      author: "Philip K. Dick"
+    }
+
+    const response = await api
+      .post('/api/book')
+      .send(request)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    assert.deepStrictEqual(response.body, request)
+
+    await Book.deleteOne({ _id: request.isbn })
+  })
 })
 
 after (async () => {
