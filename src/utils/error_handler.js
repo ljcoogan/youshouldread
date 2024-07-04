@@ -7,9 +7,11 @@ const error_handler = (err, req, res, next) => {
     }
   } else if (err.name === 'MongooseError') {
     if (err.message === 'document must have an _id before saving') {
-      res.status(400).json({
-        error: '_id not provided'
-      })
+      if (req.originalUrl === '/api/book') {
+        res.status(400).json({
+          error: 'ISBN not provided'
+        })
+      }
     }
   } else if (err.name === 'ValidationError') {
     if (err.message.startsWith('Book')) {

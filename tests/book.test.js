@@ -93,7 +93,7 @@ describe('/api/book', async () => {
       .expect('Content-Type', /application\/json/)
 
     assert.deepStrictEqual(response.body, {
-      error: '_id not provided'
+      error: 'ISBN not provided'
     })
   })
 
