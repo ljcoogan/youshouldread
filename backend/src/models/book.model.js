@@ -1,8 +1,13 @@
 import mongoose from 'mongoose'
 
 const bookSchema = new mongoose.Schema({
-  // _id will always be set to a book's ISBN-13
-  _id: Number,
+  isbn: {
+    type: Number,
+    unique: true,
+    min: 1000000000000,
+    max: 9999999999999,
+    required: true
+  },
   title: {
     type: String,
     trim: true,
@@ -16,14 +21,6 @@ const bookSchema = new mongoose.Schema({
     minLength: 1,
     maxLength: 64,
     required: true
-  }
-})
-
-bookSchema.set('toJSON', {
-  transform: (_document, json) => {
-    json.isbn = json._id
-    delete json._id
-    delete json.__v
   }
 })
 

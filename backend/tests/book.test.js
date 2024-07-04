@@ -26,17 +26,16 @@ const testBooks = [
   }
 ]
 
+const stripMongoIdentifiers = (book) => {
+  delete book._id
+  delete book.__v
+}
+
 describe('/api/book', async () => {
   beforeEach(async () => {
     await Book.deleteMany()
 
-    const newBooks = testBooks.map((book) => {
-      const newBook = { ...book }
-      newBook._id = newBook.isbn
-      delete newBook.isbn
-      return newBook
-    })
-    await Book.insertMany(newBooks)
+    await Book.insertMany(testBooks)
   })
 
   describe ('/', async () => {
@@ -45,6 +44,10 @@ describe('/api/book', async () => {
         .get('/api/book')
         .expect(200)
         .expect('Content-Type', /application\/json/)
+
+      response.body.map((book) => {
+        stripMongoIdentifiers(book)
+      })
   
       assert.deepStrictEqual(response.body, testBooks)
     })
@@ -61,10 +64,13 @@ describe('/api/book', async () => {
         .send(request)
         .expect(201)
         .expect('Content-Type', /application\/json/)
-  
+
+      stripMongoIdentifiers(response.body)
+      
       assert.deepStrictEqual(response.body, request)
   
-      await Book.deleteOne({ _id: request.isbn })
+      const deleteResponse = await Book.deleteOne({ isbn: 9780141186672 })
+      assert.strictEqual(deleteResponse.deletedCount, 1)
     })
   
     test('POST fails when ISBN isn\'t unique', async () => {
@@ -138,7 +144,7 @@ describe('/api/book', async () => {
         title: " The Man in the  High Castle ",
         author: "Philip K.   Dick      "
       }
-  
+
       const response = await api
         .post('/api/book')
         .send(request)
@@ -147,10 +153,13 @@ describe('/api/book', async () => {
   
       request.title = request.title.trim()
       request.author = request.author.trim()
+
+      stripMongoIdentifiers(response.body)
       
       assert.deepStrictEqual(response.body, request)
   
-      await Book.deleteOne({ _id: request.isbn })
+      const deleteResponse = await Book.deleteOne({ isbn: request.isbn })
+      assert.strictEqual(deleteResponse.deletedCount, 1)
     })
   })
 
@@ -160,6 +169,8 @@ describe('/api/book', async () => {
         .get('/api/book/isbn/9780140449266')
         .expect(200)
         .expect('Content-Type', /application\/json/)
+
+      stripMongoIdentifiers(response.body)
       
       assert.deepStrictEqual(response.body, testBooks[0])
     })
@@ -169,6 +180,8 @@ describe('/api/book', async () => {
         .get('/api/book/isbn/9780261103283')
         .expect(404)
         .expect('Content-Type', /application\/json/)
+
+      stripMongoIdentifiers(response.body)
 
       assert.deepStrictEqual(response.body, {
         error: 'Book not in database'
@@ -181,13 +194,16 @@ describe('/api/book', async () => {
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
+      stripMongoIdentifiers(response.body)
+
       assert.deepStrictEqual(response.body, {
         isbn: 9780141186672,
         title: "The Man in the High Castle",
         author: "Philip K. Dick"
       })
 
-      await Book.deleteOne({ _id: 9780141186672 })
+      const deleteResponse = await Book.deleteOne({ isbn: 9780141186672 })
+      assert.strictEqual(deleteResponse.deletedCount, 1)
     })
   })
 })

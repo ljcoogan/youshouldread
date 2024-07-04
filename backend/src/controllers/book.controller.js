@@ -15,9 +15,9 @@ const postBook = async (req, res, next) => {
     const { isbn, title, author } = req.body
 
     const book = new Book({
-      _id: isbn,
-      title: title,
-      author: author
+      isbn,
+      title,
+      author
     })
     
     const savedBook = await book.save()
@@ -29,7 +29,7 @@ const postBook = async (req, res, next) => {
 
 const getBookByIsbn = async (req, res, next) => {
   try {
-    const book = await Book.findById(req.params.isbn)
+    const book = await Book.findOne({ isbn: req.params.isbn })
     if (!book) {
       res.status(404).json({
         error: 'Book not in database'
@@ -49,11 +49,7 @@ const postBookByIsbn = async (req, res, next) => {
         error: 'Metadata could not be located for provided ISBN'
       })
     }
-    const book = new Book({ 
-      _id: data.isbn,
-      title: data.title,
-      author: data.author
-     })
+    const book = new Book(data)
     const savedBook = await book.save()
     res.status(201).json(savedBook)
   } catch (err) {
