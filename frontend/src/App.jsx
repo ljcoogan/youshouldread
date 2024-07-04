@@ -1,19 +1,31 @@
-import { useState } from 'react'
+import axios from 'axios'
+
+import AddBook from './components/AddBook'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const json = Object.fromEntries(formData.entries())
+    json.isbn = json.isbn.toString()
+    
+    const response = await axios
+      .post('http://localhost:3000/api/book/', json, {
+        headers: {
+        'Content-Type': 'application/json'
+        }
+      })
+
+    console.log(response)
+  }
 
   return (
     <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
+      <AddBook 
+        onSubmit={onSubmit}
+      />
     </>
   )
 }
