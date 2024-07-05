@@ -9,18 +9,21 @@ import Row from 'react-bootstrap/Row'
 import axios from 'axios'
 import { useState } from 'react'
 
+const getJsonFromForm = (e) => {
+  const formData = new FormData(e.target)
+  return Object.fromEntries(formData.entries())
+}
+
 const AddBookByIsbn = () => {
   const [showModal, setShowModal] = useState(false)
-  const [book, setBook] = useState(null)
+  const [book, setBook] = useState({ isbn: 0 })
 
-  const onSubmit = async (e) => {
+  const getMetadata = async (e) => {
     e.preventDefault()
 
-    const formData = new FormData(e.target)
-    const json = Object.fromEntries(formData.entries())
-    const isbn = json.isbn.toString()
+    const json = getJsonFromForm(e)
 
-    const metadata = await getMetadataFromIsbn(isbn)
+    const metadata = await getMetadataFromIsbn(json.isbn)
     setBook(metadata)
     setShowModal(true)
   }
@@ -31,17 +34,42 @@ const AddBookByIsbn = () => {
       console.log(response.data)
       return response.data
     } catch (err) {
-      return null
+      return {
+        isbn: Number(isbn)
+      }
     }
+  }
+
+  const closeModal = () => setShowModal(false)
+
+  const autoPost = async () => {
+    try {
+      await axios.post(`http://localhost:3000/api/book/isbn/${book.isbn}`, book)
+    } catch (err) {
+      console.log(err)
+    }
+    closeModal()
+  }  
+
+  const manualPost = async (json) => {
+    console.log('BOOK', json)
+    try {
+      await axios.post('http://localhost:3000/api/book', json)
+    } catch (err) {
+      console.log(err)
+    }
+    closeModal()
   }
 
   return (
     <>
-      <AddContainer onSubmit={onSubmit} />
-      <BookModal
+      <AddContainer onSubmit={getMetadata} />
+      <AddModal
         show={showModal}
-        handleClose={() => setShowModal(false)}
         book={book}
+        handleClose={closeModal}
+        autoPost={autoPost}
+        manualPost={manualPost}
       />
     </>
   )
@@ -84,9 +112,22 @@ const AddButton = ({ isbn }) => {
     : <Button variant="success" type="submit">Add Book</Button>
 }
 
-const BookModal = ({ show, handleClose, book }) => {
-  const add = () => {}
-  return book
+const AddModal = ({ show, book, handleClose, autoPost, manualPost }) => {
+  const submitManual = async (e) => {
+    e.preventDefault()
+    handleClose()
+
+    const json = getJsonFromForm(e)
+    json.authors = json.authors.split(',')
+    json.isbn = book.isbn
+
+    manualPost(json)
+  }
+
+  // check if book title has been filled
+  // if so, show modal for automatic add
+  // else, show modal for manual add
+  return book.title
     ? (
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -107,8 +148,7 @@ const BookModal = ({ show, handleClose, book }) => {
           </Container>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-          <Button variant="success" onClick={add}>Add Book</Button>
+          <Button variant="success" onClick={autoPost}>Add Book</Button>
         </Modal.Footer>
       </Modal>
     )
@@ -119,27 +159,27 @@ const BookModal = ({ show, handleClose, book }) => {
         </Modal.Header>
         <Modal.Body>
           <p>We're sorry, we can't obtain information on the provided ISBN. Please enter the information manually.</p>
-          <Form onSubmit={add}>
+          <Form onSubmit={submitManual}>
+            <Form.Group className="mb-3">
+              <Form.Label>ISBN</Form.Label>
+              <Form.Control type="number" name="isbn" value={book.isbn} disabled/>
+            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
               <Form.Control type="text" name="title" placeholder="The Hitchhiker's Guide to the Galaxy" />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Author</Form.Label>
-              <Form.Control type="text" name="author" placeholder="Douglas Adams" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>ISBN</Form.Label>
-              <Form.Control type="text" name="isbn" placeholder="9781529034523" />
+              <Form.Label>Author(s)</Form.Label>
+              <Form.Control type="text" name="authors" placeholder="Douglas Adams" />
               <Form.Text className="text-muted">
-                You can find this on the back of your book, above the barcode.
+                If a book has multiple authors, separate them with commas.
               </Form.Text>
             </Form.Group>
             <div className="d-grid gap-2">
               <Button
               variant="success" 
               type="submit" 
-              className="justify-content-end mt-3"
+              className="mt-3"
               >
                 Add Book
               </Button>
