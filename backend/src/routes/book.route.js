@@ -9,4 +9,6 @@ router.post('/', controller.postBook)
 router.get('/isbn/:isbn', controller.getBookByIsbn)
 router.post('/isbn/:isbn', controller.postBookByIsbn)
 
+router.get('/gbooks/:isbn', controller.getMetadataFromIsbn)
+
 export default router

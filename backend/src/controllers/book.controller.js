@@ -57,9 +57,26 @@ const postBookByIsbn = async (req, res, next) => {
   }
 }
 
+const getMetadataFromIsbn = async (req, res, next) => {
+  try {
+    const data = await metadata.googleBooks(req.params.isbn)
+    if (!data) {
+      res.status(404).json({
+        error: 'Metadata could not be located for provided ISBN'
+      })
+    } else {
+      res.json(data)
+    }
+    
+  } catch (err) {
+    next(err)
+  }
+}
+
 export default {
   getBooks,
   postBook,
   getBookByIsbn,
-  postBookByIsbn
+  postBookByIsbn,
+  getMetadataFromIsbn
 }
