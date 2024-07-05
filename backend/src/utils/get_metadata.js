@@ -10,7 +10,7 @@ const googleBooks = async (isbn) => {
   return {
     isbn: Number(volumeInfo.industryIdentifiers[0].identifier),
     title: volumeInfo.title,
-    author: volumeInfo.authors[0]
+    authors: volumeInfo.authors
   }
 }
 

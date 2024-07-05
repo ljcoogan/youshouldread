@@ -1,5 +1,8 @@
 import mongoose from 'mongoose'
 
+mongoose.SchemaTypes.String.set('trim', true)
+mongoose.SchemaTypes.String.set('maxLength', 64)
+
 const bookSchema = new mongoose.Schema({
   isbn: {
     type: Number,
@@ -10,17 +13,11 @@ const bookSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    trim: true,
-    minLength: 1,
-    maxLength: 64,
     required: true
   },
-  author: {
-    type: String,
-    trim: true,
-    minLength: 1,
-    maxLength: 64,
-    required: true
+  authors: {
+    type: [String],
+    validate: v => Array.isArray(v) && v.length > 0
   }
 })
 

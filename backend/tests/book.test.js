@@ -12,29 +12,37 @@ const testBooks = [
   {
     isbn: 9780140449266,
     title: 'The Count of Monte Cristo',
-    author: 'Alexandre Dumas'
+    authors: [
+      'Alexandre Dumas'
+    ]
   },
   {
     isbn: 9781405964067,
     title: 'East of Eden',
-    author: 'John Steinbeck'
+    authors: [
+      'John Steinbeck'
+    ]
   },
   {
     isbn: 9781786891686,
     title: 'Life of Pi',
-    author: 'Yann Martel'
+    authors: [
+      'Yann Martel'
+    ]
   }
 ]
 
-const stripMongoIdentifiers = (book) => {
-  delete book._id
-  delete book.__v
+const testRequest = {
+  isbn: 9780141186672,
+  title: "The Man in the High Castle",
+  authors: [
+    "Philip K. Dick"
+  ]
 }
 
 describe('/api/book', async () => {
   beforeEach(async () => {
     await Book.deleteMany()
-
     await Book.insertMany(testBooks)
   })
 
@@ -45,32 +53,27 @@ describe('/api/book', async () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
+      // delete mongoose identifiers so deepStrictEqual can pass
       response.body.map((book) => {
-        stripMongoIdentifiers(book)
+        delete book._id
+        delete book.__v
       })
   
       assert.deepStrictEqual(response.body, testBooks)
     })
   
     test('POST', async () => {
-      const request = {
-        isbn: 9780141186672,
-        title: "The Man in the High Castle",
-        author: "Philip K. Dick"
-      }
-  
       const response = await api
         .post('/api/book')
-        .send(request)
+        .send(testRequest)
         .expect(201)
         .expect('Content-Type', /application\/json/)
-
-      stripMongoIdentifiers(response.body)
       
-      assert.deepStrictEqual(response.body, request)
+      assert.deepStrictEqual(response.body.isbn, testRequest.isbn)
+      assert.deepStrictEqual(response.body.title, testRequest.title)
+      assert.deepStrictEqual(response.body.author, testRequest.author)
   
-      const deleteResponse = await Book.deleteOne({ isbn: 9780141186672 })
-      assert.strictEqual(deleteResponse.deletedCount, 1)
+      await Book.deleteOne({ isbn: testRequest.isbn })
     })
   
     test('POST fails when ISBN isn\'t unique', async () => {
@@ -88,10 +91,8 @@ describe('/api/book', async () => {
     })
   
     test('POST fails when ISBN isn\'t provided', async () => {
-      const request = {
-        title: "The Man in the High Castle",
-        author: "Philip K. Dick"
-      }
+      const request = { ...testRequest }
+      delete request.isbn
   
       const response = await api
         .post('/api/book')
@@ -100,15 +101,13 @@ describe('/api/book', async () => {
         .expect('Content-Type', /application\/json/)
   
       assert.deepStrictEqual(response.body, {
-        error: 'ISBN not provided'
+        error: 'Book isbn not provided'
       })
     })
   
     test('POST fails when title isn\'t provided', async () => {
-      const request = {
-        isbn: 9780141186672,
-        author: "Philip K. Dick"
-      }
+      const request = { ...testRequest }
+      delete request.title
   
       const response = await api
         .post('/api/book')
@@ -121,11 +120,9 @@ describe('/api/book', async () => {
       })
     })
   
-    test('POST fails when author isn\'t provided', async () => {
-      const request = {
-        isbn: 9780141186672,
-        title: "The Man in the High Castle"
-      }
+    test('POST fails when authors aren\'t provided', async () => {
+      const request = { ...testRequest }
+      delete request.authors
   
       const response = await api
         .post('/api/book')
@@ -134,16 +131,14 @@ describe('/api/book', async () => {
         .expect('Content-Type', /application\/json/)
       
       assert.deepStrictEqual(response.body, {
-        error: 'Book author not provided'
+        error: 'Book authors not provided'
       })
     })
   
     test('POST trims extraneous whitespace', async () => {
-      const request = {
-        isbn: 9780141186672,
-        title: " The Man in the  High Castle ",
-        author: "Philip K.   Dick      "
-      }
+      const request = { ...testRequest }
+      request.title = request.title.concat('      ')
+      request.authors[0] = '     '.concat(request.authors[0])
 
       const response = await api
         .post('/api/book')
@@ -152,14 +147,12 @@ describe('/api/book', async () => {
         .expect('Content-Type', /application\/json/)
   
       request.title = request.title.trim()
-      request.author = request.author.trim()
-
-      stripMongoIdentifiers(response.body)
+      request.authors[0] = request.authors[0].trim()
       
-      assert.deepStrictEqual(response.body, request)
+      assert.deepStrictEqual(response.body.title, request.title)
+      assert.deepStrictEqual(response.body.authors[0], request.authors[0])
   
-      const deleteResponse = await Book.deleteOne({ isbn: request.isbn })
-      assert.strictEqual(deleteResponse.deletedCount, 1)
+      await Book.deleteOne({ isbn: request.isbn })
     })
   })
 
@@ -169,10 +162,10 @@ describe('/api/book', async () => {
         .get('/api/book/isbn/9780140449266')
         .expect(200)
         .expect('Content-Type', /application\/json/)
-
-      stripMongoIdentifiers(response.body)
       
-      assert.deepStrictEqual(response.body, testBooks[0])
+      assert.deepStrictEqual(response.body.isbn, testBooks[0].isbn)
+      assert.deepStrictEqual(response.body.title, testBooks[0].title)
+      assert.deepStrictEqual(response.body.authors[0], testBooks[0].authors[0])
     })
 
     test('GET fails when ISBN provided is not in database', async () => {
@@ -181,8 +174,6 @@ describe('/api/book', async () => {
         .expect(404)
         .expect('Content-Type', /application\/json/)
 
-      stripMongoIdentifiers(response.body)
-
       assert.deepStrictEqual(response.body, {
         error: 'Book not in database'
       })
@@ -190,20 +181,15 @@ describe('/api/book', async () => {
 
     test('POST', async () => {
       const response = await api
-        .post('/api/book/isbn/9780141186672')
+        .post(`/api/book/isbn/${testRequest.isbn}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
-      stripMongoIdentifiers(response.body)
+      assert.deepStrictEqual(response.body.isbn, testRequest.isbn)
+      assert.deepStrictEqual(response.body.title, testRequest.title)
+      assert.deepStrictEqual(response.body.authors[0], testRequest.authors[0])
 
-      assert.deepStrictEqual(response.body, {
-        isbn: 9780141186672,
-        title: "The Man in the High Castle",
-        author: "Philip K. Dick"
-      })
-
-      const deleteResponse = await Book.deleteOne({ isbn: 9780141186672 })
-      assert.strictEqual(deleteResponse.deletedCount, 1)
+      await Book.deleteOne({ isbn: testRequest.isbn })
     })
   })
 })

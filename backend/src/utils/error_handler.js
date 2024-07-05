@@ -9,15 +9,15 @@ const error_handler = (err, req, res, next) => {
     if (err.message.startsWith('Book validation failed')) {
       if (err.message.includes('isbn')) {
         res.status(400).json({
-          error: 'ISBN not provided'
+          error: 'Book isbn not provided'
         })
       } else if (err.message.includes('title')) {
         res.status(400).json({
           error: 'Book title not provided'
         })
-      } else if (err.message.includes('author')) {
+      } else if (err.message.includes('authors')) {
         res.status(400).json({
-          error: 'Book author not provided'
+          error: 'Book authors not provided'
         })
       }
     }

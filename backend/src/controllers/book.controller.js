@@ -12,12 +12,12 @@ const getBooks = async (req, res, next) => {
 
 const postBook = async (req, res, next) => {
   try {
-    const { isbn, title, author } = req.body
+    const { isbn, title, authors } = req.body
 
     const book = new Book({
       isbn,
       title,
-      author
+      authors
     })
     
     const savedBook = await book.save()
