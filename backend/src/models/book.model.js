@@ -18,6 +18,10 @@ const bookSchema = new mongoose.Schema({
   authors: {
     type: [String],
     validate: v => Array.isArray(v) && v.length > 0
+  },
+  cover: {
+    type: String,
+    maxLength: 256
   }
 })
 
