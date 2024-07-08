@@ -22,6 +22,10 @@ const bookSchema = new mongoose.Schema({
   cover: {
     type: String,
     maxLength: 256
+  },
+  description: {
+    type: String,
+    maxLength: 5096
   }
 })
 

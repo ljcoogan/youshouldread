@@ -28,13 +28,13 @@ const Book = ({ book }) => {
       <Card>
         <Row>
           <Col className="d-flex justify-content-center">
-            <Image src={book.cover} className="p-3" />
+            <Image src={book.cover} className="p-3" style={{ width: "196px", objectFit: "contain" }} />
           </Col>
           <Col xs={8}>
             <Card.Body>
               <Card.Title className="mb-0">{book.title}</Card.Title>
               <Card.Text className="text-muted fst-italic" >{book.authors[0]}</Card.Text>
-              <Card.Text>Test</Card.Text>
+              <Card.Text>{book.description}</Card.Text>
             </Card.Body>
           </Col>
         </Row>  

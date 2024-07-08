@@ -14,7 +14,8 @@ const googleBooks = async (isbn) => {
     isbn: isbn,
     title: volumeInfo.title,
     authors: volumeInfo.authors,
-    cover: volumeInfo.imageLinks.thumbnail
+    cover: volumeInfo.imageLinks.thumbnail,
+    description: volumeInfo.description
   }
 }
 

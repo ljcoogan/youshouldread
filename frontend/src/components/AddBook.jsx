@@ -144,6 +144,7 @@ const AddModal = ({ show, book, handleClose, autoPost, manualPost }) => {
                 <p><b>Title:</b> {book.title}</p>
                 <p><b>Author(s):</b> {book.authors}</p>
                 <p><b>ISBN:</b> {book.isbn}</p>
+                <p><b>Description:</b> {book.description}</p>
               </Col>
             </Row>
           </Container>
