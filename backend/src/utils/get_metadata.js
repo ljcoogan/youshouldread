@@ -11,7 +11,7 @@ const googleBooks = async (isbn) => {
 
   const volumeInfo = json.items[0].volumeInfo
   return {
-    isbn: Number(volumeInfo.industryIdentifiers[0].identifier),
+    isbn: isbn,
     title: volumeInfo.title,
     authors: volumeInfo.authors,
     cover: volumeInfo.imageLinks.thumbnail

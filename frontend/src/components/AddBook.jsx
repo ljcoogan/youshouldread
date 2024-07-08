@@ -14,7 +14,7 @@ const getJsonFromForm = (e) => {
   return Object.fromEntries(formData.entries())
 }
 
-const AddBookByIsbn = () => {
+const AddBook = ({ addBook }) => {
   const [showModal, setShowModal] = useState(false)
   const [book, setBook] = useState({ isbn: 0 })
 
@@ -44,7 +44,8 @@ const AddBookByIsbn = () => {
 
   const autoPost = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/book/isbn/${book.isbn}`, book)
+      const response = await axios.post(`http://localhost:3000/api/book/isbn/${book.isbn}`, book)
+      addBook(response.data)
     } catch (err) {
       console.log(err)
     }
@@ -52,9 +53,9 @@ const AddBookByIsbn = () => {
   }  
 
   const manualPost = async (json) => {
-    console.log('BOOK', json)
     try {
-      await axios.post('http://localhost:3000/api/book', json)
+      const response = await axios.post('http://localhost:3000/api/book', json)
+      addBook(response.data)
     } catch (err) {
       console.log(err)
     }
@@ -78,7 +79,7 @@ const AddBookByIsbn = () => {
 const AddContainer = ({ onSubmit }) => {
   const [isbn, setIsbn] = useState('')
   return (
-    <Container className="mt-3" style={{ width: "50vw" }}>
+    <Container className="m-3 mx-auto" style={{ width: "55%" }}>
       <Card>
         <Card.Body>
           <Form onSubmit={onSubmit}>
@@ -136,10 +137,10 @@ const AddModal = ({ show, book, handleClose, autoPost, manualPost }) => {
         <Modal.Body>
           <Container>
             <Row>
-              <Col>
+              <Col className="p-0 m-0">
                 <img alt={`Cover for ${book.title}`} src={book.cover} />
               </Col>
-              <Col xs={8}>
+              <Col xs={8} className="p-0 m-0">
                 <p><b>Title:</b> {book.title}</p>
                 <p><b>Author(s):</b> {book.authors}</p>
                 <p><b>ISBN:</b> {book.isbn}</p>
@@ -190,4 +191,4 @@ const AddModal = ({ show, book, handleClose, autoPost, manualPost }) => {
     )
 }
 
-export default AddBookByIsbn
+export default AddBook
