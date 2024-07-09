@@ -1,5 +1,5 @@
 import Book from '../models/book.model.js'
-import metadata from '../utils/get_metadata.js'
+import metadata from '../utils/getMetadata.js'
 
 const getBooks = async (req, res, next) => {
   try {

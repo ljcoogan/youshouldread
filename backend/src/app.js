@@ -2,21 +2,12 @@ import express from 'express'
 import morgan from 'morgan'
 import mongoose from 'mongoose'
 
+import config from './utils/config.js'
+import errorHandler from './utils/errorHandler.js'
+
 import bookRouter from './routes/book.route.js'
 
-import error_handler from './utils/error_handler.js'
-
-let db
-if (process.env.NODE_ENV === 'production') {
-  db = process.env.PROD_DB
-} else if (process.env.NODE_ENV === 'development') {
-  db = process.env.DEV_DB
-} else if (process.env.NODE_ENV === 'test') {
-  db = process.env.TEST_DB
-} else {
-  throw new Error('NODE_ENV environment variable not set')
-}
-
+const db = config.getDb()
 mongoose.connect(db)
   .then(() => {
     console.log('Connected to DB')
@@ -32,6 +23,6 @@ app.use(express.json())
 
 app.use('/api/book', bookRouter)
 
-app.use(error_handler)
+app.use(errorHandler)
 
 export default app
