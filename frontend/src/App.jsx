@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import AddBook from './components/AddBook'
 import Books from './components/Books'
+import SignIn from './components/SignIn'
 
 const App = () => {
   const [loaded, setLoaded] = useState(false)
@@ -26,6 +27,7 @@ const App = () => {
 
   return (
     <>
+      <SignIn />
       <AddBook addBook={addBook}/>
       <Books books={books}/>
     </>
