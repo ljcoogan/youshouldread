@@ -1,4 +1,4 @@
-const errorHandler = (err, req, res, next) => {
+export default function (err, req, res, next) {
   if (err.name === 'MongoServerError') {
     if (err.message.startsWith('E11000 duplicate key error collection')) {
       res.status(409).json({
@@ -25,5 +25,3 @@ const errorHandler = (err, req, res, next) => {
 
   next(err)
 }
-
-export default errorHandler

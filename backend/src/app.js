@@ -4,18 +4,16 @@ import mongoose from 'mongoose'
 
 import passport from 'passport'
 import session from 'express-session'
-import passportConfig from './utils/passport.js'
-passportConfig(passport)
 
-import config from './utils/config.js'
+import dbConfig from './config/db.config.js'
+import passportConfig from './config/passport.config.js'
+
 import errorHandler from './utils/errorHandler.js'
-
-import { ensureAuth, ensureGuest } from './middleware/auth.js'
 
 import authRouter from './routes/auth.route.js'
 import bookRouter from './routes/book.route.js'
 
-const db = config.getDb()
+const db = dbConfig()
 mongoose.connect(db)
   .then(() => {
     console.log('Connected to DB')
@@ -34,6 +32,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+
+passportConfig(passport)
 app.use(passport.initialize())
 app.use(passport.session())
 

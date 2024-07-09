@@ -1,4 +1,4 @@
-function ensureAuth (req, res, next) {
+export function ensureAuth (req, res, next) {
   if (req.isAuthenticated()) {
     next()
   } else {
@@ -6,15 +6,10 @@ function ensureAuth (req, res, next) {
   }
 }
 
-function ensureGuest (req, res, next) {
+export function ensureGuest (req, res, next) {
   if (req.isAuthenticated()) {
     res.redirect('http://localhost:5173')
   } else {
     next()
   }
-}
-
-export {
-  ensureAuth,
-  ensureGuest
 }

@@ -1,4 +1,4 @@
-const getDb = () => {
+export default function() {
   if (process.env.NODE_ENV === 'production') {
     return process.env.PROD_DB
   } else if (process.env.NODE_ENV === 'development') {
@@ -8,8 +8,4 @@ const getDb = () => {
   } else {
     throw new Error('NODE_ENV environment variable not set')
   }
-}
-
-export default {
-  getDb
 }

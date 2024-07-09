@@ -1,7 +1,7 @@
 import Book from '../models/book.model.js'
-import metadata from '../utils/getMetadata.js'
+import { googleBooks } from '../utils/getMetadata.js'
 
-const getBooks = async (req, res, next) => {
+export async function getBooks (req, res, next) {
   try {
     const books = await Book.find()
     res.json(books)
@@ -10,7 +10,7 @@ const getBooks = async (req, res, next) => {
   }
 }
 
-const postBook = async (req, res, next) => {
+export async function postBook (req, res, next) {
   try {
     const { isbn, title, authors } = req.body
 
@@ -27,7 +27,7 @@ const postBook = async (req, res, next) => {
   }
 }
 
-const getBookByIsbn = async (req, res, next) => {
+export async function getBookByIsbn (req, res, next) {
   try {
     const book = await Book.findOne({ isbn: req.params.isbn })
     if (!book) {
@@ -41,9 +41,9 @@ const getBookByIsbn = async (req, res, next) => {
   }
 }
 
-const postBookByIsbn = async (req, res, next) => {
+export async function postBookByIsbn (req, res, next) {
   try {
-    const data = await metadata.googleBooks(req.params.isbn)
+    const data = await googleBooks(req.params.isbn)
     if (!data) {
       res.status(404).json({
         error: 'Metadata could not be located for provided ISBN'
@@ -57,9 +57,9 @@ const postBookByIsbn = async (req, res, next) => {
   }
 }
 
-const getMetadataFromIsbn = async (req, res, next) => {
+export async function getMetadataFromIsbn (req, res, next) {
   try {
-    const data = await metadata.googleBooks(req.params.isbn)
+    const data = await googleBooks(req.params.isbn)
     if (!data) {
       res.status(404).json({
         error: 'Metadata could not be located for provided ISBN'
@@ -71,12 +71,4 @@ const getMetadataFromIsbn = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-}
-
-export default {
-  getBooks,
-  postBook,
-  getBookByIsbn,
-  postBookByIsbn,
-  getMetadataFromIsbn
 }
