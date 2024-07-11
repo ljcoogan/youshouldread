@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
   if (process.env.NODE_ENV === 'production') {
     return process.env.PROD_DB
   } else if (process.env.NODE_ENV === 'development') {

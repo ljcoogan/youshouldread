@@ -6,7 +6,17 @@ mongoose.SchemaTypes.String.set('trim', true)
 
 const userSchema = new mongoose.Schema({
   googleId: String,
-  displayName: String
+  displayName: String,
+  username: {
+    type: String,
+    unique: true
+  },
+  books: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'books',
+    required: true,
+    validate: (v) => Array.isArray(v)
+  }
 })
 
 export default mongoose.model('User', userSchema)
