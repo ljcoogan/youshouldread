@@ -18,18 +18,18 @@ const App = () => {
     }
     initialBooks()
   }, [])
-  
+
   const addBook = (book) => {
     setBooks([book, ...books])
   }
 
-  if(!loaded) return null
+  if (!loaded) return null
 
   return (
     <>
       <SignIn />
-      <AddBook addBook={addBook}/>
-      <Books books={books}/>
+      <AddBook addBook={addBook} />
+      <Books books={books} />
     </>
   )
 }
