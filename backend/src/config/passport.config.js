@@ -7,7 +7,7 @@ export default function (passport) {
       {
         clientID: process.env.AUTH_GOOGLE_ID,
         clientSecret: process.env.AUTH_GOOGLE_SECRET,
-        callbackURL: '/auth/google/callback'
+        callbackURL: '/api/auth/google/callback'
       },
       addUser
     )
