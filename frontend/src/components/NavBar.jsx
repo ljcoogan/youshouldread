@@ -1,9 +1,9 @@
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
-import { getDisplayName } from '../services/session'
+import { getDisplayName, signOut } from '../services/session'
 
+import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
-import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 
 export default function NavBar() {
@@ -17,7 +17,7 @@ export default function NavBar() {
         .then((data) => {
           if (data !== null) {
             setDisplayName(data)
-            Cookies.set('displayName', data, { expires: 1 })
+            Cookies.set('displayName', data)
           }
         })
   }, [])
@@ -25,7 +25,7 @@ export default function NavBar() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">3books</Navbar.Brand>
+        <Navbar.Brand href="/">3books</Navbar.Brand>
         <Navbar.Text className="text-muted fst-italic">Because books matter</Navbar.Text>
         <Navbar.Collapse className="justify-content-end">
           <CheckName displayName={displayName} />
@@ -42,12 +42,16 @@ function CheckName({ displayName }) {
 
 function SignedIn({ displayName }) {
   return (
-    <Navbar.Text>
-      Hello, <a href="#profile">{displayName}</a>
-    </Navbar.Text>
+    <>
+      <Navbar.Text>
+        Hello, <a href="#profile">{displayName}</a>
+      </Navbar.Text>
+      <Button className="ms-3" variant="outline-dark" onClick={signOut}>Sign Out</Button>
+    </>
+    
   )
 }
 
 function SignedOut() {
-  return <Nav.Link href="/api/auth/google">Sign in</Nav.Link>
+  return <Button variant="outline-dark" href="/api/auth/google">Sign in</Button>
 }

@@ -17,9 +17,11 @@ router.get(
   })
 )
 
-router.get('/logout', (req, res, next) => {
-  req.logout()
-  res.redirect('http://localhost:5173')
+router.get('/google/logout', (req, res, next) => {
+  req.logout((err) => {
+    if (err) next(err)
+    else res.redirect('http://localhost:5173')
+  })
 })
 
 export default router
