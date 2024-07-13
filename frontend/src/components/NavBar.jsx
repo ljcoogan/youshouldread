@@ -48,7 +48,6 @@ function SignedIn({ displayName }) {
       </Navbar.Text>
       <Button className="ms-3" variant="outline-dark" onClick={signOut}>Sign Out</Button>
     </>
-    
   )
 }
 
