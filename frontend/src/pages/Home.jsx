@@ -6,7 +6,6 @@ import Image from 'react-bootstrap/Image'
 export default function Home() {
   return (
     <div style={{ position: "fixed" }}>
-      <NavBar />
       <Image src="../../static/home-bg.jpg" alt="Books" fluid />
       <Card variant="info" style={{
         width: "18rem",

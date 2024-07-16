@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { getBooks } from '../services/book'
+
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Container from 'react-bootstrap/Container'
@@ -5,8 +8,36 @@ import Container from 'react-bootstrap/Container'
 import Card from 'react-bootstrap/Card'
 import Image from 'react-bootstrap/Image'
 
-export default function Books({ books }) {
-  console.log('BOOKS', books)
+export default function Books() {
+  const [books, setBooks] = useState(null)
+  
+  useEffect(() => {
+    getBooks()
+      .then((data) => {
+        if (data !== null) {
+          setBooks(data)
+        }
+      })
+  }, [])
+
+  return <CheckBooks books={books} />  
+}
+
+function CheckBooks({ books }) {
+  if (books === null) return <Loading />
+  else if (books.length === 0) return <NoBooks />
+  else return <BookList  books={books} />
+}
+
+function Loading() {
+  return <p>Loading</p>
+}
+
+function NoBooks() {
+  return <p>No books</p>
+}
+
+function BookList({ books }) {
   const bookList = books.map((book) => {
     return (
       <li key={book.isbn}>

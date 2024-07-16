@@ -1,12 +1,12 @@
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
-import { getDisplayName, signOut } from '../services/session'
+import { getDisplayName, signOut } from '../services/user'
 
 import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 import Navbar from 'react-bootstrap/Navbar'
 
-export default function NavBar() {
+export default function NavBar({ changePage }) {
   const [displayName, setDisplayName] = useState(null)
 
   useEffect(() => {
@@ -25,26 +25,26 @@ export default function NavBar() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="/">3books</Navbar.Brand>
+        <Navbar.Brand href="#" onClick={() => changePage('home')}>3books</Navbar.Brand>
         <Navbar.Text className="text-muted fst-italic">Because books matter</Navbar.Text>
         <Navbar.Collapse className="justify-content-end">
-          <CheckName displayName={displayName} />
+          <CheckName displayName={displayName} changePage={changePage} />
         </Navbar.Collapse>
       </Container>
     </Navbar>
   )
 }
 
-function CheckName({ displayName }) {
-  if (displayName) return <SignedIn displayName={displayName} />
+function CheckName({ displayName, changePage }) {
+  if (displayName) return <SignedIn displayName={displayName} changePage={changePage} />
   else return <SignedOut />
 }
 
-function SignedIn({ displayName }) {
+function SignedIn({ displayName, changePage }) {
   return (
     <>
       <Navbar.Text>
-        Hello, <a href="#profile">{displayName}</a>
+        Hello, <a href="#" onClick={() => changePage('bookList')}>{displayName}</a>
       </Navbar.Text>
       <Button className="ms-3" variant="outline-dark" onClick={signOut}>Sign Out</Button>
     </>
