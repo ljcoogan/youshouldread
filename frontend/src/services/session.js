@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 
 export async function getDisplayName() {
   return axios
-    .get('/api/session/displayName')
+    .get('/api/user/displayName')
     .then(response => {
       return response.status === 200
         ? response.data
