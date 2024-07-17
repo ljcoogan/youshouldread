@@ -6,78 +6,58 @@ import Form from 'react-bootstrap/Form'
 import Modal from 'react-bootstrap/Modal'
 import Row from 'react-bootstrap/Row'
 
-import axios from 'axios'
 import { useState } from 'react'
+import { getMetadata, postBook } from '../services/book'
+import { getJsonFromForm } from '../services/form'
 
-function getJsonFromForm(e) {
-  const formData = new FormData(e.target)
-  return Object.fromEntries(formData.entries())
+const modals = {
+  none: 'none',
+  manual: 'manual',
+  add: 'add'
 }
 
-export default function AddBook({ addBook }) {
-  const [showModal, setShowModal] = useState(false)
-  const [book, setBook] = useState({ isbn: 0 })
+export default function AddBook() {
+  const [modal, setModal] = useState(modals.none)
+  const [book, setBook] = useState(null)
 
-  async function getMetadata(e) {
+  async function handleMetadata(e) {
     e.preventDefault()
 
     const json = getJsonFromForm(e)
+    const metadata = await getMetadata(json.isbn)
 
-    const metadata = await getMetadataFromIsbn(json.isbn)
-    setBook(metadata)
-    setShowModal(true)
-  }
-
-  async function getMetadataFromIsbn(isbn) {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/book/gbooks/${isbn}`
-      )
-      console.log(response.data)
-      return response.data
-    } catch (err) {
-      return {
-        isbn: Number(isbn)
-      }
+    console.log('HERE', metadata)
+    if (metadata !== null) {
+      setBook(metadata)
+      setModal(modals.add)
+    } else {
+      setModal(modals.manual)
     }
   }
 
-  function closeModal() {
-    setShowModal(false)
+  async function handleManual(e) {
+    e.preventDefault()
+
+    const json = getJsonFromForm(e)
+    json.authors = json.authors.split(',')
+    setBook(json)
+    setModal(modals.add)
   }
 
-  async function autoPost() {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/api/book/isbn/${book.isbn}`,
-        book
-      )
-      addBook(response.data)
-    } catch (err) {
-      console.log(err)
-    }
-    closeModal()
-  }
-
-  async function manualPost(json) {
-    try {
-      const response = await axios.post('http://localhost:3000/api/book', json)
-      addBook(response.data)
-    } catch (err) {
-      console.log(err)
-    }
-    closeModal()
+  async function handlePost() {
+    postBook(book)
+    setModal(modals.none)
   }
 
   return (
     <>
-      <AddContainer onSubmit={getMetadata} />
-      <AddModal
-        show={showModal}
+      <AddContainer onSubmit={handleMetadata} />
+      <CheckModal
+        modal={modal}
         book={book}
-        handleClose={closeModal}
-        autoPost={autoPost}
-        manualPost={manualPost}
+        handleClose={() => setModal(modals.none)}
+        handleManual={handleManual}
+        handlePost={handlePost}
       />
     </>
   )
@@ -86,7 +66,7 @@ export default function AddBook({ addBook }) {
 function AddContainer({ onSubmit }) {
   const [isbn, setIsbn] = useState('')
   return (
-    <Container className="m-3 mx-auto" style={{ width: '55%' }}>
+    <Container className="m-3 mx-auto">
       <Card>
         <Card.Body>
           <Form onSubmit={onSubmit}>
@@ -95,7 +75,7 @@ function AddContainer({ onSubmit }) {
               <Form.Control
                 type="text"
                 name="isbn"
-                placeholder="9781529034523"
+                placeholder="9780123456789"
                 aria-label="I S B N"
                 value={isbn}
                 onChange={(e) => setIsbn(e.target.value)}
@@ -115,43 +95,95 @@ function AddContainer({ onSubmit }) {
 }
 
 function AddButton({ isbn }) {
-  return isbn.length < 10 ? (
-    <Button variant="secondary" disabled>
-      Add Book
-    </Button>
-  ) : (
-    <Button variant="success" type="submit">
-      Add Book
-    </Button>
+  if (isbn.length < 10) {
+    return (
+      <Button variant="secondary" disabled>
+        Add Book
+      </Button>
+    )
+  } else {
+    return (
+      <Button variant="success" type="submit">
+        Add Book
+      </Button>
+    )
+  }
+}
+
+function CheckModal({ modal, book, handleClose, handleManual, handlePost }) {
+  console.log(modal)
+  if (modal === modals.none) {
+    return null
+  } else if (modal === modals.manual) {
+    return <ManualAdd handleClose={handleClose} handleSubmit={handleManual} />
+  } else if (modal === modals.add) {
+    return <Add book={book} handleClose={handleClose} handlePost={handlePost} />
+  }
+}
+
+function ManualAdd({ handleClose, handleSubmit }) {
+  return (
+    <Modal show={true} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add Book</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>
+          We're sorry, we can't obtain information on the provided ISBN. Please
+          enter the information manually.
+        </p>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>ISBN</Form.Label>
+            <Form.Control
+              type="number"
+              name="isbn"
+              aria-label="I S B N"
+              placeholder="9780123456789"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              aria-label="title"
+              placeholder="The Hitchhiker's Guide to the Galaxy"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Author(s)</Form.Label>
+            <Form.Control
+              type="text"
+              name="authors"
+              aria-label="authors"
+              placeholder="Douglas Adams"
+            />
+            <Form.Text className="text-muted">
+              If a book has multiple authors, separate them with commas.
+            </Form.Text>
+          </Form.Group>
+          <div className="d-grid gap-2">
+            <Button variant="success" type="submit" className="mt-3">
+              Next
+            </Button>
+          </div>
+        </Form>
+      </Modal.Body>
+    </Modal>
   )
 }
 
-function AddModal({ show, book, handleClose, autoPost, manualPost }) {
-  const submitManual = async (e) => {
-    e.preventDefault()
-    handleClose()
-
-    const json = getJsonFromForm(e)
-    json.authors = json.authors.split(',')
-    json.isbn = book.isbn
-
-    manualPost(json)
-  }
-
-  // check if book title has been filled
-  // if so, show modal for automatic add
-  // else, show modal for manual add
-  return book.title ? (
-    <Modal show={show} onHide={handleClose}>
+function Add({ book, handleClose, handlePost }) {
+  return (
+    <Modal show={true} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Book Info</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>
           <Row>
-            <Col className="p-0 m-0">
-              <img alt={`Cover for ${book.title}`} src={book.cover} />
-            </Col>
+            <Cover book={book} />
             <Col xs={8} className="p-0 m-0">
               <p>
                 <b>Title:</b> {book.title}
@@ -170,57 +202,20 @@ function AddModal({ show, book, handleClose, autoPost, manualPost }) {
         </Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="success" onClick={autoPost}>
+        <Button variant="success" onClick={handlePost}>
           Add Book
         </Button>
       </Modal.Footer>
     </Modal>
-  ) : (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Add Book</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p>
-          We're sorry, we can't obtain information on the provided ISBN. Please
-          enter the information manually.
-        </p>
-        <Form onSubmit={submitManual}>
-          <Form.Group className="mb-3">
-            <Form.Label>ISBN</Form.Label>
-            <Form.Control
-              type="number"
-              name="isbn"
-              value={book.isbn}
-              disabled
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Title</Form.Label>
-            <Form.Control
-              type="text"
-              name="title"
-              placeholder="The Hitchhiker's Guide to the Galaxy"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Author(s)</Form.Label>
-            <Form.Control
-              type="text"
-              name="authors"
-              placeholder="Douglas Adams"
-            />
-            <Form.Text className="text-muted">
-              If a book has multiple authors, separate them with commas.
-            </Form.Text>
-          </Form.Group>
-          <div className="d-grid gap-2">
-            <Button variant="success" type="submit" className="mt-3">
-              Add Book
-            </Button>
-          </div>
-        </Form>
-      </Modal.Body>
-    </Modal>
   )
+}
+
+function Cover({ book }) {
+  if (book.cover) {
+    return (
+      <Col className="p-0 m-0">
+        <img alt={`Cover for ${book.title}`} src={book.cover} />
+      </Col>
+    )
+  } else return null
 }

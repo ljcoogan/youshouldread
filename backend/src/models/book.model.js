@@ -1,31 +1,33 @@
 import mongoose from 'mongoose'
 
-mongoose.SchemaTypes.String.set('trim', true)
-mongoose.SchemaTypes.String.set('maxLength', 64)
-
 const bookSchema = new mongoose.Schema({
   isbn: {
     type: Number,
+    required: true,
     unique: true,
     min: 1000000000000,
-    max: 9999999999999,
-    required: true
+    max: 9999999999999
   },
   title: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   authors: {
-    type: [String],
+    type: [
+      {
+        type: String,
+        trim: true
+      }
+    ],
+    required: true,
     validate: (v) => Array.isArray(v) && v.length > 0
   },
   cover: {
-    type: String,
-    maxLength: 256
+    type: String
   },
   description: {
-    type: String,
-    maxLength: 5096
+    type: String
   }
 })
 

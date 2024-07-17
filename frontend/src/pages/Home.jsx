@@ -5,18 +5,19 @@ import Image from 'react-bootstrap/Image'
 
 export default function Home() {
   return (
-    <div style={{ position: "fixed" }}>
+    <div style={{ position: 'fixed' }}>
       <Image src="../../static/home-bg.jpg" alt="Books" fluid />
-      <Card variant="info" style={{
-        width: "18rem",
-        position: "fixed",
-        top: "20vh",
-        left: "39vw"
-      }}>
+      <Card
+        variant="info"
+        style={{
+          width: '18rem',
+          position: 'fixed',
+          top: '20vh',
+          left: '39vw'
+        }}
+      >
         <Card.Body>
-          <Card.Title>
-            3books
-          </Card.Title>
+          <Card.Title>3books</Card.Title>
           <Card.Text>
             3books lets you share the books that mean the most to you.
           </Card.Text>

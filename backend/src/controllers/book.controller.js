@@ -1,57 +1,33 @@
 import Book from '../models/book.model.js'
+import User from '../models/user.model.js'
+import getUser from '../utils/getUser.js'
 import { googleBooks } from '../utils/getMetadata.js'
 
 export async function getBooks(req, res, next) {
-  try {
-    const books = await Book.find()
-    res.json(books)
-  } catch (err) {
-    next(err)
+  if (req.session && req.session.passport) {
+    try {
+      const user = await getUser(req)
+      await user.populate('books')
+      res.json(user.books)
+    } catch (err) {
+      next(err)
+    }
+  } else {
+    res.status(401).end()
   }
 }
 
 export async function postBook(req, res, next) {
   try {
-    const { isbn, title, authors } = req.body
+    const user = await getUser(req)
 
-    const book = new Book({
-      isbn,
-      title,
-      authors
-    })
-
+    const book = new Book(req.body)
     const savedBook = await book.save()
-    res.status(201).json(savedBook)
-  } catch (err) {
-    next(err)
-  }
-}
 
-export async function getBookByIsbn(req, res, next) {
-  try {
-    const book = await Book.findOne({ isbn: req.params.isbn })
-    if (!book) {
-      res.status(404).json({
-        error: 'Book not in database'
-      })
-    }
-    res.json(book)
-  } catch (err) {
-    next(err)
-  }
-}
+    const books = [...user.books, savedBook]
+    const savedUser = await User.findByIdAndUpdate(user.id, { books: books })
 
-export async function postBookByIsbn(req, res, next) {
-  try {
-    const data = await googleBooks(req.params.isbn)
-    if (!data) {
-      res.status(404).json({
-        error: 'Metadata could not be located for provided ISBN'
-      })
-    }
-    const book = new Book(data)
-    const savedBook = await book.save()
-    res.status(201).json(savedBook)
+    res.status(201).json(savedUser)
   } catch (err) {
     next(err)
   }

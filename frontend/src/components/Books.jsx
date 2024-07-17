@@ -10,23 +10,22 @@ import Image from 'react-bootstrap/Image'
 
 export default function Books() {
   const [books, setBooks] = useState(null)
-  
+
   useEffect(() => {
-    getBooks()
-      .then((data) => {
-        if (data !== null) {
-          setBooks(data)
-        }
-      })
+    getBooks().then((data) => {
+      if (data !== null) {
+        setBooks(data)
+      }
+    })
   }, [])
 
-  return <CheckBooks books={books} />  
+  return <CheckBooks books={books} />
 }
 
 function CheckBooks({ books }) {
   if (books === null) return <Loading />
   else if (books.length === 0) return <NoBooks />
-  else return <BookList  books={books} />
+  else return <BookList books={books} />
 }
 
 function Loading() {
@@ -38,6 +37,7 @@ function NoBooks() {
 }
 
 function BookList({ books }) {
+  console.log(books)
   const bookList = books.map((book) => {
     return (
       <li key={book.isbn}>
@@ -50,13 +50,19 @@ function BookList({ books }) {
 }
 
 function Book({ book }) {
+  const cover = book.cover
+    ? book.cover
+    : '../../static/grey.jpeg'
+
+  console.log('BOOK', book)
+  
   return (
-    <Container className="m-3 mx-auto" style={{ width: '55%' }}>
+    <Container className="m-3 mx-auto">
       <Card>
         <Row>
           <Col className="d-flex justify-content-center">
             <Image
-              src={book.cover}
+              src={cover}
               className="p-3"
               style={{ width: '196px', objectFit: 'contain' }}
             />
@@ -67,7 +73,6 @@ function Book({ book }) {
               <Card.Text className="text-muted fst-italic">
                 {book.authors[0]}
               </Card.Text>
-              <Card.Text>{book.description}</Card.Text>
             </Card.Body>
           </Col>
         </Row>

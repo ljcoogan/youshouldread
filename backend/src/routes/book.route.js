@@ -6,9 +6,6 @@ const router = express.Router()
 router.get('/', controller.getBooks)
 router.post('/', controller.postBook)
 
-router.get('/isbn/:isbn', controller.getBookByIsbn)
-router.post('/isbn/:isbn', controller.postBookByIsbn)
-
-router.get('/gbooks/:isbn', controller.getMetadataFromIsbn)
+router.get('/:isbn', controller.getMetadataFromIsbn)
 
 export default router

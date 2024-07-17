@@ -9,7 +9,6 @@ import dbConfig from './config/db.config.js'
 import passportConfig from './config/passport.config.js'
 
 import authRouter from './routes/auth.route.js'
-import bookRouter from './routes/book.route.js'
 import userRouter from './routes/user.route.js'
 
 import errorHandler from './utils/errorHandler.js'
@@ -47,7 +46,6 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use('/api/auth', authRouter)
-app.use('/api/book', bookRouter)
 app.use('/api/user', userRouter)
 
 app.use(errorHandler)

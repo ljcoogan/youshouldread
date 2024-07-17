@@ -13,8 +13,7 @@ export default function NavBar({ changePage }) {
     const name = Cookies.get('displayName')
     name
       ? setDisplayName(name)
-      : getDisplayName()
-        .then((data) => {
+      : getDisplayName().then((data) => {
           if (data !== null) {
             setDisplayName(data)
             Cookies.set('displayName', data)
@@ -25,8 +24,12 @@ export default function NavBar({ changePage }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#" onClick={() => changePage('home')}>3books</Navbar.Brand>
-        <Navbar.Text className="text-muted fst-italic">Because books matter</Navbar.Text>
+        <Navbar.Brand href="#" onClick={() => changePage('home')}>
+          3books
+        </Navbar.Brand>
+        <Navbar.Text className="text-muted fst-italic">
+          Because books matter
+        </Navbar.Text>
         <Navbar.Collapse className="justify-content-end">
           <CheckName displayName={displayName} changePage={changePage} />
         </Navbar.Collapse>
@@ -36,7 +39,8 @@ export default function NavBar({ changePage }) {
 }
 
 function CheckName({ displayName, changePage }) {
-  if (displayName) return <SignedIn displayName={displayName} changePage={changePage} />
+  if (displayName)
+    return <SignedIn displayName={displayName} changePage={changePage} />
   else return <SignedOut />
 }
 
@@ -44,13 +48,22 @@ function SignedIn({ displayName, changePage }) {
   return (
     <>
       <Navbar.Text>
-        Hello, <a href="#" onClick={() => changePage('bookList')}>{displayName}</a>
+        Hello,{' '}
+        <a href="#" onClick={() => changePage('bookList')}>
+          {displayName}
+        </a>
       </Navbar.Text>
-      <Button className="ms-3" variant="outline-dark" onClick={signOut}>Sign Out</Button>
+      <Button className="ms-3" variant="outline-dark" onClick={signOut}>
+        Sign Out
+      </Button>
     </>
   )
 }
 
 function SignedOut() {
-  return <Button variant="outline-dark" href="/api/auth/google">Sign in</Button>
+  return (
+    <Button variant="outline-dark" href="/api/auth/google">
+      Sign in
+    </Button>
+  )
 }

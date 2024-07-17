@@ -1,19 +1,27 @@
 import mongoose from 'mongoose'
 
-mongoose.SchemaTypes.String.set('maxLength', 64)
-mongoose.SchemaTypes.String.set('required', true)
-mongoose.SchemaTypes.String.set('trim', true)
-
 const userSchema = new mongoose.Schema({
-  googleId: String,
-  displayName: String,
+  googleId: {
+    type: String,
+    required: true
+  },
+  displayName: {
+    type: String,
+    required: true,
+    trim: true
+  },
   username: {
     type: String,
+    required: true,
     unique: true
   },
   books: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'books',
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book'
+      }
+    ],
     required: true,
     validate: (v) => Array.isArray(v)
   }
