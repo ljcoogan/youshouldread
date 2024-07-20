@@ -19,6 +19,7 @@ const modals = {
 export default function AddBook() {
   const [modal, setModal] = useState(modals.none)
   const [book, setBook] = useState(null)
+  const [isbn, setIsbn] = useState('')
 
   async function handleMetadata(e) {
     e.preventDefault()
@@ -40,6 +41,7 @@ export default function AddBook() {
 
     const json = getJsonFromForm(e)
     json.authors = json.authors.split(',')
+    json.isbn = Number(isbn)
     setBook(json)
     setModal(modals.add)
   }
@@ -47,14 +49,16 @@ export default function AddBook() {
   async function handlePost() {
     postBook(book)
     setModal(modals.none)
+    setIsbn('')
   }
 
   return (
     <>
-      <AddContainer onSubmit={handleMetadata} />
+      <AddContainer onSubmit={handleMetadata} isbn={isbn} setIsbn={setIsbn} />
       <CheckModal
         modal={modal}
         book={book}
+        isbn={isbn}
         handleClose={() => setModal(modals.none)}
         handleManual={handleManual}
         handlePost={handlePost}
@@ -63,8 +67,7 @@ export default function AddBook() {
   )
 }
 
-function AddContainer({ onSubmit }) {
-  const [isbn, setIsbn] = useState('')
+function AddContainer({ onSubmit, isbn, setIsbn }) {
   return (
     <Container className="m-3 mx-auto">
       <Card>
@@ -110,18 +113,31 @@ function AddButton({ isbn }) {
   }
 }
 
-function CheckModal({ modal, book, handleClose, handleManual, handlePost }) {
+function CheckModal({
+  modal,
+  book,
+  isbn,
+  handleClose,
+  handleManual,
+  handlePost
+}) {
   console.log(modal)
   if (modal === modals.none) {
     return null
   } else if (modal === modals.manual) {
-    return <ManualAdd handleClose={handleClose} handleSubmit={handleManual} />
+    return (
+      <ManualAdd
+        isbn={isbn}
+        handleClose={handleClose}
+        handleSubmit={handleManual}
+      />
+    )
   } else if (modal === modals.add) {
     return <Add book={book} handleClose={handleClose} handlePost={handlePost} />
   }
 }
 
-function ManualAdd({ handleClose, handleSubmit }) {
+function ManualAdd({ isbn, handleClose, handleSubmit }) {
   return (
     <Modal show={true} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -136,10 +152,11 @@ function ManualAdd({ handleClose, handleSubmit }) {
           <Form.Group className="mb-3">
             <Form.Label>ISBN</Form.Label>
             <Form.Control
-              type="number"
+              type="text"
               name="isbn"
               aria-label="I S B N"
-              placeholder="9780123456789"
+              value={isbn}
+              disabled
             />
           </Form.Group>
           <Form.Group className="mb-3">
