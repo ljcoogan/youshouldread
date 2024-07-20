@@ -194,9 +194,6 @@ function Add({ book, handleClose, handlePost }) {
               <p>
                 <b>ISBN:</b> {book.isbn}
               </p>
-              <p>
-                <b>Description:</b> {book.description}
-              </p>
             </Col>
           </Row>
         </Container>

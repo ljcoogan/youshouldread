@@ -25,9 +25,6 @@ const bookSchema = new mongoose.Schema({
   },
   cover: {
     type: String
-  },
-  description: {
-    type: String
   }
 })
 

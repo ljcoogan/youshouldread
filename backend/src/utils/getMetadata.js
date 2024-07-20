@@ -16,7 +16,6 @@ export async function googleBooks(isbn) {
     isbn: isbn,
     title: volumeInfo.title,
     authors: volumeInfo.authors,
-    cover: volumeInfo.imageLinks.thumbnail,
-    description: volumeInfo.description
+    cover: volumeInfo.imageLinks.thumbnail
   }
 }
