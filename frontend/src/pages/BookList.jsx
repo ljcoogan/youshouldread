@@ -1,6 +1,6 @@
-import NavBar from '../components/NavBar'
-import AddBook from '../components/AddBook'
-import Books from '../components/Books'
+import NavBar from "../components/NavBar";
+import AddBook from "../components/AddBook";
+import Books from "../components/Books";
 
 export default function BookList() {
   return (
@@ -8,5 +8,5 @@ export default function BookList() {
       <AddBook />
       <Books />
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const bookSchema = new mongoose.Schema({
   isbn: {
@@ -6,26 +6,26 @@ const bookSchema = new mongoose.Schema({
     required: true,
     unique: true,
     min: 1000000000000,
-    max: 9999999999999
+    max: 9999999999999,
   },
   title: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   authors: {
     type: [
       {
         type: String,
-        trim: true
-      }
+        trim: true,
+      },
     ],
     required: true,
-    validate: (v) => Array.isArray(v) && v.length > 0
+    validate: (v) => Array.isArray(v) && v.length > 0,
   },
   cover: {
-    type: String
-  }
-})
+    type: String,
+  },
+});
 
-export default mongoose.model('Book', bookSchema)
+export default mongoose.model("Book", bookSchema);

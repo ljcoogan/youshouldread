@@ -1,19 +1,19 @@
-import NavBar from '../components/NavBar'
+import NavBar from "../components/NavBar";
 
-import Card from 'react-bootstrap/Card'
-import Image from 'react-bootstrap/Image'
+import Card from "react-bootstrap/Card";
+import Image from "react-bootstrap/Image";
 
 export default function Home() {
   return (
-    <div style={{ position: 'fixed' }}>
+    <div style={{ position: "fixed" }}>
       <Image src="../../static/home-bg.jpg" alt="Books" fluid />
       <Card
         variant="info"
         style={{
-          width: '18rem',
-          position: 'fixed',
-          top: '20vh',
-          left: '39vw'
+          width: "18rem",
+          position: "fixed",
+          top: "20vh",
+          left: "39vw",
         }}
       >
         <Card.Body>
@@ -27,5 +27,5 @@ export default function Home() {
         </Card.Body>
       </Card>
     </div>
-  )
+  );
 }

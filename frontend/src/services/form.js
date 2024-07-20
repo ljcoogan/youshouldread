@@ -1,4 +1,4 @@
 export function getJsonFromForm(e) {
-  const formData = new FormData(e.target)
-  return Object.fromEntries(formData.entries())
+  const formData = new FormData(e.target);
+  return Object.fromEntries(formData.entries());
 }

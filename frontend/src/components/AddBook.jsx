@@ -1,55 +1,55 @@
-import Button from 'react-bootstrap/Button'
-import Card from 'react-bootstrap/Card'
-import Col from 'react-bootstrap/Col'
-import Container from 'react-bootstrap/Container'
-import Form from 'react-bootstrap/Form'
-import Modal from 'react-bootstrap/Modal'
-import Row from 'react-bootstrap/Row'
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import Row from "react-bootstrap/Row";
 
-import { useState } from 'react'
-import { getMetadata, postBook } from '../services/book'
-import { getJsonFromForm } from '../services/form'
+import { useState } from "react";
+import { getMetadata, postBook } from "../services/book";
+import { getJsonFromForm } from "../services/form";
 
 const modals = {
-  none: 'none',
-  manual: 'manual',
-  add: 'add'
-}
+  none: "none",
+  manual: "manual",
+  add: "add",
+};
 
 export default function AddBook() {
-  const [modal, setModal] = useState(modals.none)
-  const [book, setBook] = useState(null)
-  const [isbn, setIsbn] = useState('')
+  const [modal, setModal] = useState(modals.none);
+  const [book, setBook] = useState(null);
+  const [isbn, setIsbn] = useState("");
 
   async function handleMetadata(e) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const json = getJsonFromForm(e)
-    const metadata = await getMetadata(json.isbn)
+    const json = getJsonFromForm(e);
+    const metadata = await getMetadata(json.isbn);
 
-    console.log('HERE', metadata)
+    console.log("HERE", metadata);
     if (metadata !== null) {
-      setBook(metadata)
-      setModal(modals.add)
+      setBook(metadata);
+      setModal(modals.add);
     } else {
-      setModal(modals.manual)
+      setModal(modals.manual);
     }
   }
 
   async function handleManual(e) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const json = getJsonFromForm(e)
-    json.authors = json.authors.split(',')
-    json.isbn = Number(isbn)
-    setBook(json)
-    setModal(modals.add)
+    const json = getJsonFromForm(e);
+    json.authors = json.authors.split(",");
+    json.isbn = Number(isbn);
+    setBook(json);
+    setModal(modals.add);
   }
 
   async function handlePost() {
-    postBook(book)
-    setModal(modals.none)
-    setIsbn('')
+    postBook(book);
+    setModal(modals.none);
+    setIsbn("");
   }
 
   return (
@@ -64,7 +64,7 @@ export default function AddBook() {
         handlePost={handlePost}
       />
     </>
-  )
+  );
 }
 
 function AddContainer({ onSubmit, isbn, setIsbn }) {
@@ -94,7 +94,7 @@ function AddContainer({ onSubmit, isbn, setIsbn }) {
         </Card.Body>
       </Card>
     </Container>
-  )
+  );
 }
 
 function AddButton({ isbn }) {
@@ -103,13 +103,13 @@ function AddButton({ isbn }) {
       <Button variant="secondary" disabled>
         Add Book
       </Button>
-    )
+    );
   } else {
     return (
       <Button variant="success" type="submit">
         Add Book
       </Button>
-    )
+    );
   }
 }
 
@@ -119,11 +119,11 @@ function CheckModal({
   isbn,
   handleClose,
   handleManual,
-  handlePost
+  handlePost,
 }) {
-  console.log(modal)
+  console.log(modal);
   if (modal === modals.none) {
-    return null
+    return null;
   } else if (modal === modals.manual) {
     return (
       <ManualAdd
@@ -131,9 +131,11 @@ function CheckModal({
         handleClose={handleClose}
         handleSubmit={handleManual}
       />
-    )
+    );
   } else if (modal === modals.add) {
-    return <Add book={book} handleClose={handleClose} handlePost={handlePost} />
+    return (
+      <Add book={book} handleClose={handleClose} handlePost={handlePost} />
+    );
   }
 }
 
@@ -188,7 +190,7 @@ function ManualAdd({ isbn, handleClose, handleSubmit }) {
         </Form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
 
 function Add({ book, handleClose, handlePost }) {
@@ -221,7 +223,7 @@ function Add({ book, handleClose, handlePost }) {
         </Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
 
 function Cover({ book }) {
@@ -230,6 +232,6 @@ function Cover({ book }) {
       <Col className="p-0 m-0">
         <img alt={`Cover for ${book.title}`} src={book.cover} />
       </Col>
-    )
-  } else return null
+    );
+  } else return null;
 }

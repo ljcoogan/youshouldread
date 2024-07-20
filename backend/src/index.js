@@ -1,5 +1,5 @@
-import app from './app.js'
+import app from "./app.js";
 
 app.listen(process.env.PORT, () => {
-  console.log(`App started on port ${process.env.PORT}`)
-})
+  console.log(`App started on port ${process.env.PORT}`);
+});
