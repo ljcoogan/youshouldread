@@ -33,6 +33,21 @@ export async function postBook(req, res, next) {
   }
 }
 
+export async function getBooksByUser(req, res, next) {
+  try {
+    const user = await User.findOne({ username: req.params.username }).populate(
+      "books"
+    );
+    if (user) {
+      res.json(user.books);
+    } else {
+      res.status(404).end();
+    }
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getMetadataFromIsbn(req, res, next) {
   try {
     const data = await googleBooks(req.params.isbn);

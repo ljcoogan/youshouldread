@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export async function getBooks() {
-  return axios.get("/api/user/books").then((response) => {
+export async function getBooks(username) {
+  return axios.get(`/api/book/u/${username}`).then((response) => {
     return response.status === 200 ? response.data : null;
   });
 }

@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 
-export default function NavBar({ changePage }) {
+export default function NavBar() {
   const [displayName, setDisplayName] = useState(null);
 
   useEffect(() => {
@@ -24,34 +24,28 @@ export default function NavBar({ changePage }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#" onClick={() => changePage("home")}>
-          3books
-        </Navbar.Brand>
+        <Navbar.Brand href="/">3books</Navbar.Brand>
         <Navbar.Text className="text-muted fst-italic">
           Because books matter
         </Navbar.Text>
         <Navbar.Collapse className="justify-content-end">
-          <CheckName displayName={displayName} changePage={changePage} />
+          <CheckName displayName={displayName} />
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
 
-function CheckName({ displayName, changePage }) {
-  if (displayName)
-    return <SignedIn displayName={displayName} changePage={changePage} />;
+function CheckName({ displayName }) {
+  if (displayName) return <SignedIn displayName={displayName} />;
   else return <SignedOut />;
 }
 
-function SignedIn({ displayName, changePage }) {
+function SignedIn({ displayName }) {
   return (
     <>
       <Navbar.Text>
-        Hello,{" "}
-        <a href="#" onClick={() => changePage("bookList")}>
-          {displayName}
-        </a>
+        Hello, <a href="/u/liam">{displayName}</a>
       </Navbar.Text>
       <Button className="ms-3" variant="outline-dark" onClick={signOut}>
         Sign Out

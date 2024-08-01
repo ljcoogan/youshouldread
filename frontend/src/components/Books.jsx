@@ -8,11 +8,11 @@ import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Image from "react-bootstrap/Image";
 
-export default function Books() {
+export default function Books({ username }) {
   const [books, setBooks] = useState(null);
 
   useEffect(() => {
-    getBooks().then((data) => {
+    getBooks(username).then((data) => {
       if (data !== null) {
         setBooks(data);
       }
