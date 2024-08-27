@@ -16,7 +16,7 @@ const modals = {
   add: "add",
 };
 
-export default function AddBook() {
+export default function AddBook({ username }) {
   const [modal, setModal] = useState(modals.none);
   const [book, setBook] = useState(null);
   const [isbn, setIsbn] = useState("");
@@ -27,7 +27,6 @@ export default function AddBook() {
     const json = getJsonFromForm(e);
     const metadata = await getMetadata(json.isbn);
 
-    console.log("HERE", metadata);
     if (metadata !== null) {
       setBook(metadata);
       setModal(modals.add);
@@ -121,7 +120,6 @@ function CheckModal({
   handleManual,
   handlePost,
 }) {
-  console.log(modal);
   if (modal === modals.none) {
     return null;
   } else if (modal === modals.manual) {

@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/", controller.getBooks);
 router.post("/", controller.postBook);
+router.delete("/:id", controller.deleteBook);
 
 router.get("/u/:username", controller.getBooksByUser);
 router.get("/:isbn", controller.getMetadataFromIsbn);

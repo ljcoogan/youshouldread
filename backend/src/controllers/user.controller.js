@@ -1,10 +1,13 @@
 import getUser from "../utils/getUser.js";
 
-export async function getDisplayName(req, res, next) {
+export async function getNames(req, res, next) {
   if (req.session && req.session.passport) {
     try {
       const user = await getUser(req);
-      res.send(user.displayName);
+      res.json({
+        displayName: user.displayName,
+        username: user.username,
+      });
     } catch (err) {
       next(err);
     }

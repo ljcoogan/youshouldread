@@ -18,6 +18,7 @@ export async function getBooks(req, res, next) {
 }
 
 export async function postBook(req, res, next) {
+  if (req.)
   try {
     const user = await getUser(req);
 
@@ -28,6 +29,16 @@ export async function postBook(req, res, next) {
     const savedUser = await User.findByIdAndUpdate(user.id, { books: books });
 
     res.status(201).json(savedUser);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteBook(req, res, next) {
+  try {
+    const user = await getUser(req);
+
+
   } catch (err) {
     next(err);
   }

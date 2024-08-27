@@ -1,26 +1,10 @@
-import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { getDisplayName, signOut } from "../services/user";
+import { signOut } from "../services/user";
 
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 
-export default function NavBar() {
-  const [displayName, setDisplayName] = useState(null);
-
-  useEffect(() => {
-    const name = Cookies.get("displayName");
-    name
-      ? setDisplayName(name)
-      : getDisplayName().then((data) => {
-          if (data !== null) {
-            setDisplayName(data);
-            Cookies.set("displayName", data);
-          }
-        });
-  }, []);
-
+export default function NavBar({ displayName, username }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -29,23 +13,24 @@ export default function NavBar() {
           Because books matter
         </Navbar.Text>
         <Navbar.Collapse className="justify-content-end">
-          <CheckName displayName={displayName} />
+          <CheckName displayName={displayName} username={username} />
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
 
-function CheckName({ displayName }) {
-  if (displayName) return <SignedIn displayName={displayName} />;
+function CheckName({ displayName, username }) {
+  if (displayName)
+    return <SignedIn displayName={displayName} username={username} />;
   else return <SignedOut />;
 }
 
-function SignedIn({ displayName }) {
+function SignedIn({ displayName, username }) {
   return (
     <>
       <Navbar.Text>
-        Hello, <a href="/u/liam">{displayName}</a>
+        Hello, <a href={`/u/${username}`}>{displayName}</a>
       </Navbar.Text>
       <Button className="ms-3" variant="outline-dark" onClick={signOut}>
         Sign Out
